@@ -1,34 +1,16 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import { commands, window, ExtensionContext, workspace, ThemeIcon, extensions } from "vscode";
-import { frameworks, iconMapping } from "./config";
+import { commands, window, ExtensionContext, workspace, ThemeIcon } from "vscode";
+import { wildcards, iconMapping } from "./config";
 
 function onError(error: Error, message?: string) {
 	console.log(error);
 	window.showErrorMessage(`${message} ${error.message}`.trim());
 }
 
-function getCustomFolders(): string[] | [] {
-	const config = workspace.getConfiguration("vscode-show-migration");
-	return config.get<string[]>("customFolder") || [];
-}
-
-function addCustomFolder(folder: string) {
-	const config = workspace.getConfiguration("vscode-show-migration");
-	const existingFolders: string[] = getCustomFolders();
-
-	if (existingFolders.includes(folder)) {
-		window.showInformationMessage(`Custom migration folder already exists: ${folder}`);
-		return;
-	} else {
-		existingFolders.push(folder);
-		config.update("customFolder", existingFolders, true);
-	}
-}
-
 function getSearchFolders(): string[] {
 	const customFolders = getCustomFolders();
-	const searchFolders = frameworks.map((framework) => framework.migrationsFolder);
+	const searchFolders = wildcards.map((wildcard) => wildcard);
 
 	if (customFolders.length > 0) {
 		return [...searchFolders, ...customFolders];
@@ -103,7 +85,7 @@ function showMigration() {
 }
 
 function revealMigrationFolder() {
-	Promise.all(frameworks.map((framework) => workspace.findFiles(framework.migrationsFolder)))
+	Promise.all(wildcards.map((wildcard) => workspace.findFiles(wildcard)))
 		.then((results) => {
 			for (const files of results) {
 				if (files.length > 0) {
@@ -119,19 +101,36 @@ function revealMigrationFolder() {
 		});
 }
 
-function promptForCustomFolder() {
-	window.showInputBox({ prompt: "Enter the path to your custom migration folder" }).then((folder) => {
-		if (folder) {
-			const folderUri = workspace.workspaceFolders?.find((f) => f.uri.fsPath === folder)?.uri;
+function getCustomFolders(): string[] | [] {
+	const config = workspace.getConfiguration("vscode-show-migration");
+	return config.get<string[]>("customFolders") || [];
+}
 
-			if (folderUri) {
+function addCustomFolder(folder: string) {
+	const config = workspace.getConfiguration("vscode-show-migration");
+	const existingFolders: string[] = getCustomFolders();
+
+	if (existingFolders.includes(folder)) {
+		window.showInformationMessage(`Custom migration folder already exists: ${folder}`);
+		return;
+	} else {
+		existingFolders.push(folder);
+		config.update("customFolders", existingFolders, true);
+	}
+}
+
+function promptForAddCustomFolder() {
+	window
+		.showInputBox({
+			prompt: "Enter the path to your custom migration folder with wildcard",
+			placeHolder: "db/scripts/*.rb",
+		})
+		.then((folder) => {
+			if (folder) {
 				addCustomFolder(folder);
-				window.showInformationMessage(`Custom migration folder set to: ${folder}`);
-			} else {
-				window.showErrorMessage("The specified folder does not exist in the workspace.");
+				window.showInformationMessage(`Added custom migration folder: ${folder}`);
 			}
-		}
-	});
+		});
 }
 
 function promptForRemoveCustomFolder() {
@@ -139,16 +138,16 @@ function promptForRemoveCustomFolder() {
 	const existingFolders: string[] = getCustomFolders();
 
 	if (existingFolders.length === 0) {
-		window.showInformationMessage("No custom migration folders to remove.");
+		window.showInformationMessage("No custom migration folders set for this workspace.");
 		return;
 	}
 
 	window
-		.showQuickPick(existingFolders, { placeHolder: "Select a custom migration folder to remove" })
+		.showQuickPick(existingFolders, { placeHolder: "Select a custom migration folder wildcard to remove" })
 		.then((selectedFolder) => {
 			if (selectedFolder) {
 				const updatedFolders = existingFolders.filter((folder) => folder !== selectedFolder);
-				config.update("customFolder", updatedFolders, true);
+				config.update("customFolders", updatedFolders, true);
 				window.showInformationMessage(`Custom migration folder removed: ${selectedFolder}`);
 			}
 		});
@@ -180,7 +179,7 @@ export function activate(context: ExtensionContext) {
 	context.subscriptions.push(showMigrationCommand);
 
 	const addCustomFolderCommand = commands.registerCommand("vscode-show-migration.addCustomMigrationFolder", () => {
-		promptForCustomFolder();
+		promptForAddCustomFolder();
 	});
 	context.subscriptions.push(addCustomFolderCommand);
 
@@ -190,6 +189,8 @@ export function activate(context: ExtensionContext) {
 			promptForRemoveCustomFolder();
 		}
 	);
+
+	context.subscriptions.push(removeCustomMigrationFolderCommand);
 }
 
 // This method is called when your extension is deactivated

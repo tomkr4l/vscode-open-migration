@@ -33,7 +33,21 @@
 				"command": "vscode-show-migration.removeCustomMigrationFolder",
 				"title": "ShowMigration: Remove custom migration folder for this workspace"
 			}
-		]
+		],
+		"configuration": {
+			"type": "object",
+			"title": "VSCode Show Migration Configuration",
+			"properties": {
+				"vscode-show-migration.customFolders": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": [],
+					"description": "Custom migration folders to be used by the extension. The extension will use the latest migration file from these folders."
+				}
+			}
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
