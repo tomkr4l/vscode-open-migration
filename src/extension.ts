@@ -46,7 +46,7 @@ function openMigration() {
 					const fileName = file.split("/").pop();
 					const fileExtension = fileName?.split(".").pop() || "";
 					const iconId = iconMapping["." + fileExtension] || "file";
-					const fileIcon = new ThemeIcon(iconId);
+					const fileIcon = new ThemeIcon(iconId); // file icon not supported? https://github.com/microsoft/vscode/issues/59826
 					return {
 						label: `$(${fileIcon.id}) ${fileName}`,
 						description: fileUri,

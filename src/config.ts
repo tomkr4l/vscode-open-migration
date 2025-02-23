@@ -17,10 +17,10 @@ export const frameworks = [
 	{ id: "django", name: "Django", migrationsFolder: "migrations/*.py", fileExtension: ".py", fileIcon: "python" },
 ];
 
+// file icon not supported? https://github.com/microsoft/vscode/issues/59826
 export const iconMapping: { [key: string]: string } = {
 	".rb": "ruby",
-	".exs": "elixir",
-	".ex": "elixir",
-	".php": "php",
-	".py": "python",
+	".exs": "file",
+	".php": "file",
+	".py": "snake",
 };
