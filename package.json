@@ -22,8 +22,16 @@
 				"title": "ShowMigration: Reveal Migration Folder"
 			},
 			{
-				"command": "vscode-show-migration.openMigration",
-				"title": "ShowMigration: Open Migration File..."
+				"command": "vscode-show-migration.showMigration",
+				"title": "ShowMigration: Show Migration File..."
+			},
+			{
+				"command": "vscode-show-migration.addCustomMigrationFolder",
+				"title": "ShowMigration: Add custom migration folder for this workspace"
+			},
+			{
+				"command": "vscode-show-migration.removeCustomMigrationFolder",
+				"title": "ShowMigration: Remove custom migration folder for this workspace"
 			}
 		]
 	},

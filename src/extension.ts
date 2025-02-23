@@ -8,10 +8,40 @@ function onError(error: Error, message?: string) {
 	window.showErrorMessage(`${message} ${error.message}`.trim());
 }
 
+function getCustomFolders(): string[] | [] {
+	const config = workspace.getConfiguration("vscode-show-migration");
+	return config.get<string[]>("customFolder") || [];
+}
+
+function addCustomFolder(folder: string) {
+	const config = workspace.getConfiguration("vscode-show-migration");
+	const existingFolders: string[] = getCustomFolders();
+
+	if (existingFolders.includes(folder)) {
+		window.showInformationMessage(`Custom migration folder already exists: ${folder}`);
+		return;
+	} else {
+		existingFolders.push(folder);
+		config.update("customFolder", existingFolders, true);
+	}
+}
+
+function getSearchFolders(): string[] {
+	const customFolders = getCustomFolders();
+	const searchFolders = frameworks.map((framework) => framework.migrationsFolder);
+
+	if (customFolders.length > 0) {
+		return [...searchFolders, ...customFolders];
+	} else {
+		return searchFolders;
+	}
+}
+
 function showLatest() {
 	let allFiles: string[] = [];
+	const folders = getSearchFolders();
 
-	Promise.all(frameworks.map((framework) => workspace.findFiles(framework.migrationsFolder)))
+	Promise.all(folders.map((folder) => workspace.findFiles(folder)))
 		.then((results) => {
 			results.forEach((files) => {
 				allFiles.push(...files.map((file) => file.fsPath));
@@ -30,8 +60,10 @@ function showLatest() {
 		});
 }
 
-function openMigration() {
-	Promise.all(frameworks.map((framework) => workspace.findFiles(framework.migrationsFolder)))
+function showMigration() {
+	const folders = getSearchFolders();
+
+	Promise.all(folders.map((folder) => workspace.findFiles(folder)))
 		.then((results) => {
 			const allFiles = results
 				.flat()
@@ -87,6 +119,41 @@ function revealMigrationFolder() {
 		});
 }
 
+function promptForCustomFolder() {
+	window.showInputBox({ prompt: "Enter the path to your custom migration folder" }).then((folder) => {
+		if (folder) {
+			const folderUri = workspace.workspaceFolders?.find((f) => f.uri.fsPath === folder)?.uri;
+
+			if (folderUri) {
+				addCustomFolder(folder);
+				window.showInformationMessage(`Custom migration folder set to: ${folder}`);
+			} else {
+				window.showErrorMessage("The specified folder does not exist in the workspace.");
+			}
+		}
+	});
+}
+
+function promptForRemoveCustomFolder() {
+	const config = workspace.getConfiguration("vscode-show-migration");
+	const existingFolders: string[] = getCustomFolders();
+
+	if (existingFolders.length === 0) {
+		window.showInformationMessage("No custom migration folders to remove.");
+		return;
+	}
+
+	window
+		.showQuickPick(existingFolders, { placeHolder: "Select a custom migration folder to remove" })
+		.then((selectedFolder) => {
+			if (selectedFolder) {
+				const updatedFolders = existingFolders.filter((folder) => folder !== selectedFolder);
+				config.update("customFolder", updatedFolders, true);
+				window.showInformationMessage(`Custom migration folder removed: ${selectedFolder}`);
+			}
+		});
+}
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: ExtensionContext) {
@@ -107,10 +174,22 @@ export function activate(context: ExtensionContext) {
 	});
 	context.subscriptions.push(revealFolderCommand);
 
-	const openMigrationCommand = commands.registerCommand("vscode-show-migration.openMigration", () => {
-		openMigration();
+	const showMigrationCommand = commands.registerCommand("vscode-show-migration.showMigration", () => {
+		showMigration();
 	});
-	context.subscriptions.push(openMigrationCommand);
+	context.subscriptions.push(showMigrationCommand);
+
+	const addCustomFolderCommand = commands.registerCommand("vscode-show-migration.addCustomMigrationFolder", () => {
+		promptForCustomFolder();
+	});
+	context.subscriptions.push(addCustomFolderCommand);
+
+	const removeCustomMigrationFolderCommand = commands.registerCommand(
+		"vscode-show-migration.removeCustomMigrationFolder",
+		() => {
+			promptForRemoveCustomFolder();
+		}
+	);
 }
 
 // This method is called when your extension is deactivated
