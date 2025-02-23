@@ -1,13 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import { commands, window, ExtensionContext, workspace } from "vscode";
-
-const frameworks = [
-	{ id: "rails", name: "Ruby on Rails", migrationsFolder: "db/migrate/*.rb" },
-	{ id: "phoenix", name: "Phoenix", migrationsFolder: "priv/repo/migrations/*.exs" },
-	{ id: "laravel", name: "Laravel", migrationsFolder: "database/migrations/*.php" },
-	{ id: "django", name: "Django", migrationsFolder: "migrations/*.py" },
-];
+import { commands, window, ExtensionContext, workspace, ThemeIcon, extensions } from "vscode";
+import { frameworks, iconMapping } from "./config";
 
 function onError(error: Error, message?: string) {
 	console.log(error);
@@ -27,6 +21,43 @@ function showLatest() {
 				const sortedFiles = allFiles.sort();
 				const latest = sortedFiles[sortedFiles.length - 1];
 				workspace.openTextDocument(latest).then(window.showTextDocument, onError);
+			} else {
+				window.showInformationMessage("No migrations found.");
+			}
+		})
+		.catch((error) => {
+			onError(error, "An error occurred while searching for migrations.");
+		});
+}
+
+function openMigration() {
+	Promise.all(frameworks.map((framework) => workspace.findFiles(framework.migrationsFolder)))
+		.then((results) => {
+			const allFiles = results.flat().map((file) => file.fsPath);
+
+			if (allFiles.length > 0) {
+				const sortedFiles = allFiles.sort().reverse();
+
+				const quickPickItems = sortedFiles.map((file) => {
+					const fileUri = workspace.asRelativePath(file);
+					const fileName = file.split("/").pop();
+					const fileExtension = fileName?.split(".").pop() || "";
+					const iconId = iconMapping["." + fileExtension] || "file";
+					const fileIcon = new ThemeIcon(iconId);
+					return {
+						label: `$(${fileIcon.id}) ${fileName}`,
+						description: fileUri,
+						filePath: file,
+					};
+				});
+
+				window
+					.showQuickPick(quickPickItems, { placeHolder: "Select a migration file to open" })
+					.then((selectedItem) => {
+						if (selectedItem) {
+							workspace.openTextDocument(selectedItem.filePath).then(window.showTextDocument, onError);
+						}
+					});
 			} else {
 				window.showInformationMessage("No migrations found.");
 			}
@@ -63,16 +94,20 @@ export function activate(context: ExtensionContext) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	const disposable = commands.registerCommand("vscode-show-migration.showLatest", () => {
+	const showLatestCommand = commands.registerCommand("vscode-show-migration.showLatest", () => {
 		showLatest();
 	});
+	context.subscriptions.push(showLatestCommand);
 
-	const disposable2 = commands.registerCommand("vscode-show-migration.revealFolder", () => {
+	const revealFolderCommand = commands.registerCommand("vscode-show-migration.revealFolder", () => {
 		revealMigrationFolder();
 	});
+	context.subscriptions.push(revealFolderCommand);
 
-	context.subscriptions.push(disposable);
-	context.subscriptions.push(disposable2);
+	const openMigrationCommand = commands.registerCommand("vscode-show-migration.openMigration", () => {
+		openMigration();
+	});
+	context.subscriptions.push(openMigrationCommand);
 }
 
 // This method is called when your extension is deactivated

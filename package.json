@@ -1,6 +1,6 @@
 {
 	"name": "vscode-show-migration",
-	"displayName": "ShowMigration",
+	"displayName": "Show Migration",
 	"description": "Work with framework DB migrations",
 	"version": "0.0.1",
 	"engines": {
@@ -15,11 +15,15 @@
 		"commands": [
 			{
 				"command": "vscode-show-migration.showLatest",
-				"title": "ShowMigration: Show Latest Migration"
+				"title": "ShowMigration: Show Latest Migration File"
 			},
 			{
 				"command": "vscode-show-migration.revealFolder",
 				"title": "ShowMigration: Reveal Migration Folder"
+			},
+			{
+				"command": "vscode-show-migration.openMigration",
+				"title": "ShowMigration: Open Migration File..."
 			}
 		]
 	},
