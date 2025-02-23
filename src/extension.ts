@@ -33,7 +33,10 @@ function showLatest() {
 function openMigration() {
 	Promise.all(frameworks.map((framework) => workspace.findFiles(framework.migrationsFolder)))
 		.then((results) => {
-			const allFiles = results.flat().map((file) => file.fsPath);
+			const allFiles = results
+				.flat()
+				.map((file) => file.fsPath)
+				.filter((filePath) => !filePath.split("/").pop()?.startsWith("."));
 
 			if (allFiles.length > 0) {
 				const sortedFiles = allFiles.sort().reverse();

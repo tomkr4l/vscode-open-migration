@@ -20,6 +20,7 @@ export const frameworks = [
 export const iconMapping: { [key: string]: string } = {
 	".rb": "ruby",
 	".exs": "elixir",
+	".ex": "elixir",
 	".php": "php",
 	".py": "python",
 };
