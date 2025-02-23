@@ -2,7 +2,12 @@
 // Import the module and reference it with the alias vscode in your code below
 import { commands, window, ExtensionContext, workspace } from "vscode";
 
-const frameworks = [{ id: "rails", name: "Ruby on Rails", folder: "db/migrate/*.rb" }];
+const frameworks = [
+	{ id: "rails", name: "Ruby on Rails", migrationsFolder: "db/migrate/*.rb" },
+	{ id: "phoenix", name: "Phoenix", migrationsFolder: "priv/repo/migrations/*.exs" },
+	{ id: "laravel", name: "Laravel", migrationsFolder: "database/migrations/*.php" },
+	{ id: "django", name: "Django", migrationsFolder: "migrations/*.py" },
+];
 
 function onError(error: Error, message?: string) {
 	console.log(error);
@@ -12,7 +17,7 @@ function onError(error: Error, message?: string) {
 function showLatest() {
 	let allFiles: string[] = [];
 
-	Promise.all(frameworks.map((framework) => workspace.findFiles(framework.folder)))
+	Promise.all(frameworks.map((framework) => workspace.findFiles(framework.migrationsFolder)))
 		.then((results) => {
 			results.forEach((files) => {
 				allFiles.push(...files.map((file) => file.fsPath));
@@ -31,6 +36,23 @@ function showLatest() {
 		});
 }
 
+function revealMigrationFolder() {
+	Promise.all(frameworks.map((framework) => workspace.findFiles(framework.migrationsFolder)))
+		.then((results) => {
+			for (const files of results) {
+				if (files.length > 0) {
+					const folderUri = files[0].with({ path: files[0].path.replace(/\/[^\/]+$/, "") });
+					commands.executeCommand("revealInExplorer", folderUri);
+					return;
+				}
+			}
+			window.showInformationMessage("No migration folder found.");
+		})
+		.catch((error) => {
+			onError(error, "An error occurred while searching for migration folders.");
+		});
+}
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: ExtensionContext) {
@@ -45,7 +67,12 @@ export function activate(context: ExtensionContext) {
 		showLatest();
 	});
 
+	const disposable2 = commands.registerCommand("vscode-show-migration.revealFolder", () => {
+		revealMigrationFolder();
+	});
+
 	context.subscriptions.push(disposable);
+	context.subscriptions.push(disposable2);
 }
 
 // This method is called when your extension is deactivated
