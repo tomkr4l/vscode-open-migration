@@ -14,8 +14,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "vscode-show-migration.helloWorld",
-        "title": "Hello World"
+        "command": "vscode-show-migration.showLatest",
+        "title": "Show Latest Migration"
       }
     ]
   },
