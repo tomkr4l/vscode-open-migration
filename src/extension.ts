@@ -4,28 +4,31 @@ import { commands, window, ExtensionContext, workspace } from "vscode";
 
 const frameworks = [{ id: "rails", name: "Ruby on Rails", folder: "db/migrate/*.rb" }];
 
-function showLatest() {
-	let found: boolean = false;
-
-	frameworks.forEach((framework) => {
-		workspace.findFiles(framework.folder).then((files) => {
-			if (files.length > 0) {
-				const paths = sortFilesByFramework(
-					framework.id,
-					files.map((file) => file.fsPath)
-				);
-
-				const latest = paths[paths.length - 1];
-				window.showInformationMessage(`Latest migration: ${latest}`);
-			}
-		});
-	});
-
-	window.showInformationMessage("No migrations found or framework not supported.");
+function onError(error: Error, message?: string) {
+	console.log(error);
+	window.showErrorMessage(`${message} ${error.message}`.trim());
 }
 
-function sortFilesByFramework(frameworkId: string, paths: string[]): string[] {
-	return paths.sort();
+function showLatest() {
+	let allFiles: string[] = [];
+
+	Promise.all(frameworks.map((framework) => workspace.findFiles(framework.folder)))
+		.then((results) => {
+			results.forEach((files) => {
+				allFiles.push(...files.map((file) => file.fsPath));
+			});
+
+			if (allFiles.length > 0) {
+				const sortedFiles = allFiles.sort();
+				const latest = sortedFiles[sortedFiles.length - 1];
+				workspace.openTextDocument(latest).then(window.showTextDocument, onError);
+			} else {
+				window.showInformationMessage("No migrations found.");
+			}
+		})
+		.catch((error) => {
+			onError(error, "An error occurred while searching for migrations.");
+		});
 }
 
 // This method is called when your extension is activated
