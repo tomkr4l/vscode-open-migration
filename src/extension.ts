@@ -1,6 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import { commands, window, ExtensionContext, workspace, ThemeIcon } from "vscode";
+import { commands, window, ExtensionContext, workspace, ThemeIcon, ConfigurationTarget } from "vscode";
 import { wildcards, iconMapping } from "./config";
 
 function onError(error: Error, message?: string) {
@@ -115,7 +115,7 @@ function addCustomFolder(folder: string) {
 		return;
 	} else {
 		existingFolders.push(folder);
-		config.update("customFolders", existingFolders, true);
+		config.update("customFolders", existingFolders, ConfigurationTarget.Workspace);
 	}
 }
 
@@ -147,7 +147,7 @@ function promptForRemoveCustomFolder() {
 		.then((selectedFolder) => {
 			if (selectedFolder) {
 				const updatedFolders = existingFolders.filter((folder) => folder !== selectedFolder);
-				config.update("customFolders", updatedFolders, true);
+				config.update("customFolders", updatedFolders, ConfigurationTarget.Workspace);
 				window.showInformationMessage(`Custom migration folder removed: ${selectedFolder}`);
 			}
 		});

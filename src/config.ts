@@ -1,8 +1,8 @@
 export const wildcards = [
-	"db/migrate/*.rb",
-	"priv/repo/migrations/*.exs",
-	"database/migrations/*.php",
-	"migrations/*.py",
+	"db/migrate/*.rb", // Ruby on Rails
+	"priv/repo/migrations/*.exs", // Elixir Phoenix
+	"database/migrations/*.php", // Laravel
+	"migrations/*.py", // Django
 ];
 
 // file icon not supported? https://github.com/microsoft/vscode/issues/59826
