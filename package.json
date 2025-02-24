@@ -1,7 +1,7 @@
 {
 	"name": "vscode-show-migration",
 	"displayName": "Show Migration",
-	"description": "Work with framework DB migrations",
+	"description": "Work with migration files easily. Open the latest migration file, reveal the migration folder, and more.",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.97.0"
@@ -11,6 +11,7 @@
 	],
 	"activationEvents": [],
 	"main": "./out/extension.js",
+	"icon": "src/images/icon.png",
 	"contributes": {
 		"commands": [
 			{
@@ -31,8 +32,7 @@
 			},
 			{
 				"command": "vscode-show-migration.removeFolder",
-				"title": "ShowMigration: Remove migration folder for this workspace",
-				"enablement": "config.vscode-show-migration.searchFolders"
+				"title": "ShowMigration: Remove migration folder for this workspace"
 			},
 			{
 				"command": "vscode-show-migration.resetToDefaults",
