@@ -1,17 +1,20 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import { commands, window, ExtensionContext, workspace, ThemeIcon, extensions } from "vscode";
-import { frameworks, iconMapping } from "./config";
+import { commands, window, ExtensionContext, workspace, ThemeIcon, ConfigurationTarget } from "vscode";
+import { defaultSearchFolders, iconMapping } from "./config";
+
+const searchFoldersKey = "searchFolders";
 
 function onError(error: Error, message?: string) {
 	console.log(error);
 	window.showErrorMessage(`${message} ${error.message}`.trim());
 }
 
-function showLatest() {
+function openLatest() {
 	let allFiles: string[] = [];
+	const folders = getSearchFolders();
 
-	Promise.all(frameworks.map((framework) => workspace.findFiles(framework.migrationsFolder)))
+	Promise.all(folders.map((folder) => workspace.findFiles(folder)))
 		.then((results) => {
 			results.forEach((files) => {
 				allFiles.push(...files.map((file) => file.fsPath));
@@ -31,7 +34,9 @@ function showLatest() {
 }
 
 function openMigration() {
-	Promise.all(frameworks.map((framework) => workspace.findFiles(framework.migrationsFolder)))
+	const folders = getSearchFolders();
+
+	Promise.all(folders.map((folder) => workspace.findFiles(folder)))
 		.then((results) => {
 			const allFiles = results
 				.flat()
@@ -71,7 +76,9 @@ function openMigration() {
 }
 
 function revealMigrationFolder() {
-	Promise.all(frameworks.map((framework) => workspace.findFiles(framework.migrationsFolder)))
+	const folders = getSearchFolders();
+
+	Promise.all(folders.map((folder) => workspace.findFiles(folder)))
 		.then((results) => {
 			for (const files of results) {
 				if (files.length > 0) {
@@ -87,6 +94,61 @@ function revealMigrationFolder() {
 		});
 }
 
+function getSearchFolders(): string[] | [] {
+	const config = workspace.getConfiguration("vscode-show-migration");
+	return config.get<string[]>(searchFoldersKey) || defaultSearchFolders;
+}
+
+function addCustomFolder(folder: string) {
+	const existingFolders: string[] = getSearchFolders();
+
+	if (existingFolders.includes(folder)) {
+		window.showInformationMessage(`Custom migration folder already exists: ${folder}`);
+		return;
+	} else {
+		existingFolders.push(folder);
+		setSearchFolders(existingFolders);
+	}
+}
+
+function promptForAddFolder() {
+	window
+		.showInputBox({
+			prompt: "Enter the path to your custom migration folder with wildcard",
+			placeHolder: "example: db/scripts/*.rb",
+		})
+		.then((folder) => {
+			if (folder) {
+				addCustomFolder(folder);
+				window.showInformationMessage(`Added custom migration folder: ${folder}`);
+			}
+		});
+}
+
+function promptForRemoveFolder() {
+	const existingFolders: string[] = getSearchFolders();
+
+	if (existingFolders.length === 0) {
+		window.showInformationMessage("No custom migration folders set for this workspace.");
+		return;
+	}
+
+	window
+		.showQuickPick(existingFolders, { placeHolder: "Select a custom migration folder wildcard to remove" })
+		.then((selectedFolder) => {
+			if (selectedFolder) {
+				const updatedFolders = existingFolders.filter((folder) => folder !== selectedFolder);
+				setSearchFolders(updatedFolders);
+				window.showInformationMessage(`Custom migration folder removed: ${selectedFolder}`);
+			}
+		});
+}
+
+function setSearchFolders(folders: string[]) {
+	const config = workspace.getConfiguration("vscode-show-migration");
+	config.update(searchFoldersKey, folders, ConfigurationTarget.Workspace);
+}
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: ExtensionContext) {
@@ -97,10 +159,10 @@ export function activate(context: ExtensionContext) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	const showLatestCommand = commands.registerCommand("vscode-show-migration.showLatest", () => {
-		showLatest();
+	const openLatestCommand = commands.registerCommand("vscode-show-migration.openLatest", () => {
+		openLatest();
 	});
-	context.subscriptions.push(showLatestCommand);
+	context.subscriptions.push(openLatestCommand);
 
 	const revealFolderCommand = commands.registerCommand("vscode-show-migration.revealFolder", () => {
 		revealMigrationFolder();
@@ -111,6 +173,24 @@ export function activate(context: ExtensionContext) {
 		openMigration();
 	});
 	context.subscriptions.push(openMigrationCommand);
+
+	const addFolderCommand = commands.registerCommand("vscode-show-migration.addFolder", () => {
+		promptForAddFolder();
+	});
+	context.subscriptions.push(addFolderCommand);
+
+	const removeFolderCommand = commands.registerCommand("vscode-show-migration.removeFolder", () => {
+		promptForRemoveFolder();
+	});
+
+	context.subscriptions.push(removeFolderCommand);
+
+	const resetFoldersCommand = commands.registerCommand("vscode-show-migration.resetToDefaults", () => {
+		setSearchFolders(defaultSearchFolders);
+		window.showInformationMessage("Migration folders reset to default.");
+	});
+
+	context.subscriptions.push(resetFoldersCommand);
 }
 
 // This method is called when your extension is deactivated
