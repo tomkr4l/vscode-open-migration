@@ -4,6 +4,10 @@ All notable changes to the "vscode-show-migration" extension will be documented 
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [Unreleased]
+## [1.0.0]
 
 - Initial release
+- Show latest migration
+- Open migration file
+- Reveal migration folder in file explorer
+- Set custom migration folders for workspace
