@@ -2,7 +2,7 @@
 	"name": "vscode-show-migration",
 	"displayName": "Show Migration",
 	"description": "Work with migration files easily. Open the latest migration file, reveal the migration folder, and more.",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"engines": {
 		"vscode": "^1.97.0"
 	},
