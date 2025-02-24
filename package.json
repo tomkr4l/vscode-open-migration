@@ -14,36 +14,46 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "vscode-show-migration.showLatest",
-				"title": "ShowMigration: Show Latest Migration File"
+				"command": "vscode-show-migration.openLatest",
+				"title": "ShowMigration: Open Latest Migration"
 			},
 			{
 				"command": "vscode-show-migration.revealFolder",
 				"title": "ShowMigration: Reveal Migration Folder"
 			},
 			{
-				"command": "vscode-show-migration.showMigration",
-				"title": "ShowMigration: Show Migration File..."
+				"command": "vscode-show-migration.openMigration",
+				"title": "ShowMigration: Open Migration File..."
 			},
 			{
-				"command": "vscode-show-migration.addCustomMigrationFolder",
-				"title": "ShowMigration: Add custom migration folder for this workspace"
+				"command": "vscode-show-migration.addFolder",
+				"title": "ShowMigration: Add migration folder for this workspace"
 			},
 			{
-				"command": "vscode-show-migration.removeCustomMigrationFolder",
-				"title": "ShowMigration: Remove custom migration folder for this workspace"
+				"command": "vscode-show-migration.removeFolder",
+				"title": "ShowMigration: Remove migration folder for this workspace",
+				"enablement": "config.vscode-show-migration.searchFolders"
+			},
+			{
+				"command": "vscode-show-migration.resetToDefaults",
+				"title": "ShowMigration: Reset to default"
 			}
 		],
 		"configuration": {
 			"type": "object",
 			"title": "VSCode Show Migration Configuration",
 			"properties": {
-				"vscode-show-migration.customFolders": {
+				"vscode-show-migration.searchFolders": {
 					"type": "array",
 					"items": {
 						"type": "string"
 					},
-					"default": [],
+					"default": [
+						"db/migrate/*.rb",
+						"priv/repo/migrations/*.exs",
+						"database/migrations/*.php",
+						"migrations/*.py"
+					],
 					"description": "Custom migration folders to be used by the extension. The extension will use the latest migration file from these folders."
 				}
 			}

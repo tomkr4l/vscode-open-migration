@@ -1,4 +1,4 @@
-export const wildcards = [
+export const defaultSearchFolders = [
 	"db/migrate/*.rb", // Ruby on Rails
 	"priv/repo/migrations/*.exs", // Elixir Phoenix
 	"database/migrations/*.php", // Laravel

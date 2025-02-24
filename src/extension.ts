@@ -1,25 +1,16 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import { commands, window, ExtensionContext, workspace, ThemeIcon, ConfigurationTarget } from "vscode";
-import { wildcards, iconMapping } from "./config";
+import { defaultSearchFolders, iconMapping } from "./config";
+
+const searchFoldersKey = "searchFolders";
 
 function onError(error: Error, message?: string) {
 	console.log(error);
 	window.showErrorMessage(`${message} ${error.message}`.trim());
 }
 
-function getSearchFolders(): string[] {
-	const customFolders = getCustomFolders();
-	const searchFolders = wildcards.map((wildcard) => wildcard);
-
-	if (customFolders.length > 0) {
-		return [...searchFolders, ...customFolders];
-	} else {
-		return searchFolders;
-	}
-}
-
-function showLatest() {
+function openLatest() {
 	let allFiles: string[] = [];
 	const folders = getSearchFolders();
 
@@ -42,7 +33,7 @@ function showLatest() {
 		});
 }
 
-function showMigration() {
+function openMigration() {
 	const folders = getSearchFolders();
 
 	Promise.all(folders.map((folder) => workspace.findFiles(folder)))
@@ -85,7 +76,9 @@ function showMigration() {
 }
 
 function revealMigrationFolder() {
-	Promise.all(wildcards.map((wildcard) => workspace.findFiles(wildcard)))
+	const folders = getSearchFolders();
+
+	Promise.all(folders.map((folder) => workspace.findFiles(folder)))
 		.then((results) => {
 			for (const files of results) {
 				if (files.length > 0) {
@@ -101,29 +94,28 @@ function revealMigrationFolder() {
 		});
 }
 
-function getCustomFolders(): string[] | [] {
+function getSearchFolders(): string[] | [] {
 	const config = workspace.getConfiguration("vscode-show-migration");
-	return config.get<string[]>("customFolders") || [];
+	return config.get<string[]>(searchFoldersKey) || defaultSearchFolders;
 }
 
 function addCustomFolder(folder: string) {
-	const config = workspace.getConfiguration("vscode-show-migration");
-	const existingFolders: string[] = getCustomFolders();
+	const existingFolders: string[] = getSearchFolders();
 
 	if (existingFolders.includes(folder)) {
 		window.showInformationMessage(`Custom migration folder already exists: ${folder}`);
 		return;
 	} else {
 		existingFolders.push(folder);
-		config.update("customFolders", existingFolders, ConfigurationTarget.Workspace);
+		setSearchFolders(existingFolders);
 	}
 }
 
-function promptForAddCustomFolder() {
+function promptForAddFolder() {
 	window
 		.showInputBox({
 			prompt: "Enter the path to your custom migration folder with wildcard",
-			placeHolder: "db/scripts/*.rb",
+			placeHolder: "example: db/scripts/*.rb",
 		})
 		.then((folder) => {
 			if (folder) {
@@ -133,9 +125,8 @@ function promptForAddCustomFolder() {
 		});
 }
 
-function promptForRemoveCustomFolder() {
-	const config = workspace.getConfiguration("vscode-show-migration");
-	const existingFolders: string[] = getCustomFolders();
+function promptForRemoveFolder() {
+	const existingFolders: string[] = getSearchFolders();
 
 	if (existingFolders.length === 0) {
 		window.showInformationMessage("No custom migration folders set for this workspace.");
@@ -147,10 +138,15 @@ function promptForRemoveCustomFolder() {
 		.then((selectedFolder) => {
 			if (selectedFolder) {
 				const updatedFolders = existingFolders.filter((folder) => folder !== selectedFolder);
-				config.update("customFolders", updatedFolders, ConfigurationTarget.Workspace);
+				setSearchFolders(updatedFolders);
 				window.showInformationMessage(`Custom migration folder removed: ${selectedFolder}`);
 			}
 		});
+}
+
+function setSearchFolders(folders: string[]) {
+	const config = workspace.getConfiguration("vscode-show-migration");
+	config.update(searchFoldersKey, folders, ConfigurationTarget.Workspace);
 }
 
 // This method is called when your extension is activated
@@ -163,34 +159,38 @@ export function activate(context: ExtensionContext) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	const showLatestCommand = commands.registerCommand("vscode-show-migration.showLatest", () => {
-		showLatest();
+	const openLatestCommand = commands.registerCommand("vscode-show-migration.openLatest", () => {
+		openLatest();
 	});
-	context.subscriptions.push(showLatestCommand);
+	context.subscriptions.push(openLatestCommand);
 
 	const revealFolderCommand = commands.registerCommand("vscode-show-migration.revealFolder", () => {
 		revealMigrationFolder();
 	});
 	context.subscriptions.push(revealFolderCommand);
 
-	const showMigrationCommand = commands.registerCommand("vscode-show-migration.showMigration", () => {
-		showMigration();
+	const openMigrationCommand = commands.registerCommand("vscode-show-migration.openMigration", () => {
+		openMigration();
 	});
-	context.subscriptions.push(showMigrationCommand);
+	context.subscriptions.push(openMigrationCommand);
 
-	const addCustomFolderCommand = commands.registerCommand("vscode-show-migration.addCustomMigrationFolder", () => {
-		promptForAddCustomFolder();
+	const addFolderCommand = commands.registerCommand("vscode-show-migration.addFolder", () => {
+		promptForAddFolder();
 	});
-	context.subscriptions.push(addCustomFolderCommand);
+	context.subscriptions.push(addFolderCommand);
 
-	const removeCustomMigrationFolderCommand = commands.registerCommand(
-		"vscode-show-migration.removeCustomMigrationFolder",
-		() => {
-			promptForRemoveCustomFolder();
-		}
-	);
+	const removeFolderCommand = commands.registerCommand("vscode-show-migration.removeFolder", () => {
+		promptForRemoveFolder();
+	});
 
-	context.subscriptions.push(removeCustomMigrationFolderCommand);
+	context.subscriptions.push(removeFolderCommand);
+
+	const resetFoldersCommand = commands.registerCommand("vscode-show-migration.resetToDefaults", () => {
+		setSearchFolders(defaultSearchFolders);
+		window.showInformationMessage("Migration folders reset to default.");
+	});
+
+	context.subscriptions.push(resetFoldersCommand);
 }
 
 // This method is called when your extension is deactivated
