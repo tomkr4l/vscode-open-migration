@@ -1,8 +1,14 @@
 {
-	"name": "vscode-show-migration",
-	"displayName": "Show Migration",
+	"name": "vscode-open-migration",
+	"displayName": "Open Migration",
 	"description": "Work with migration files easily. Open the latest migration file, reveal the migration folder, and more.",
 	"version": "0.1.0",
+	"publisher": "tomkr4l",
+	"author": {
+		"name": "Tomáš Král",
+		"homepage": "https://github.com/tomkr4l"
+	},
+	"license": "MIT",
 	"engines": {
 		"vscode": "^1.97.0"
 	},
@@ -15,35 +21,35 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "vscode-show-migration.openLatest",
-				"title": "ShowMigration: Open Latest Migration"
+				"command": "vscode-open-migration.openLatest",
+				"title": "Open Latest Migration"
 			},
 			{
-				"command": "vscode-show-migration.revealFolder",
-				"title": "ShowMigration: Reveal Migration Folder"
+				"command": "vscode-open-migration.revealFolder",
+				"title": "Reveal Migration Folder"
 			},
 			{
-				"command": "vscode-show-migration.openMigration",
-				"title": "ShowMigration: Open Migration File..."
+				"command": "vscode-open-migration.openMigration",
+				"title": "Open Migration File..."
 			},
 			{
-				"command": "vscode-show-migration.addFolder",
-				"title": "ShowMigration: Add migration folder for this workspace"
+				"command": "vscode-open-migration.addFolder",
+				"title": "OpenMigration: Add migration folder for this workspace"
 			},
 			{
-				"command": "vscode-show-migration.removeFolder",
-				"title": "ShowMigration: Remove migration folder for this workspace"
+				"command": "vscode-open-migration.removeFolder",
+				"title": "OpenMigration: Remove migration folder for this workspace"
 			},
 			{
-				"command": "vscode-show-migration.resetToDefaults",
-				"title": "ShowMigration: Reset to default"
+				"command": "vscode-open-migration.resetToDefaults",
+				"title": "OpenMigration: Reset to default"
 			}
 		],
 		"configuration": {
 			"type": "object",
-			"title": "VSCode Show Migration Configuration",
+			"title": "VSCode Open Migration Configuration",
 			"properties": {
-				"vscode-show-migration.searchFolders": {
+				"vscode-open-migration.searchFolders": {
 					"type": "array",
 					"items": {
 						"type": "string"

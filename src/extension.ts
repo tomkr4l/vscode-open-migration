@@ -95,7 +95,7 @@ function revealMigrationFolder() {
 }
 
 function getSearchFolders(): string[] | [] {
-	const config = workspace.getConfiguration("vscode-show-migration");
+	const config = workspace.getConfiguration("vscode-open-migration");
 	return config.get<string[]>(searchFoldersKey) || defaultSearchFolders;
 }
 
@@ -145,7 +145,7 @@ function promptForRemoveFolder() {
 }
 
 function setSearchFolders(folders: string[]) {
-	const config = workspace.getConfiguration("vscode-show-migration");
+	const config = workspace.getConfiguration("vscode-open-migration");
 	config.update(searchFoldersKey, folders, ConfigurationTarget.Workspace);
 }
 
@@ -154,38 +154,38 @@ function setSearchFolders(folders: string[]) {
 export function activate(context: ExtensionContext) {
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "vscode-show-migration" is now active!');
+	console.log('Congratulations, your extension "vscode-open-migration" is now active!');
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	const openLatestCommand = commands.registerCommand("vscode-show-migration.openLatest", () => {
+	const openLatestCommand = commands.registerCommand("vscode-open-migration.openLatest", () => {
 		openLatest();
 	});
 	context.subscriptions.push(openLatestCommand);
 
-	const revealFolderCommand = commands.registerCommand("vscode-show-migration.revealFolder", () => {
+	const revealFolderCommand = commands.registerCommand("vscode-open-migration.revealFolder", () => {
 		revealMigrationFolder();
 	});
 	context.subscriptions.push(revealFolderCommand);
 
-	const openMigrationCommand = commands.registerCommand("vscode-show-migration.openMigration", () => {
+	const openMigrationCommand = commands.registerCommand("vscode-open-migration.openMigration", () => {
 		openMigration();
 	});
 	context.subscriptions.push(openMigrationCommand);
 
-	const addFolderCommand = commands.registerCommand("vscode-show-migration.addFolder", () => {
+	const addFolderCommand = commands.registerCommand("vscode-open-migration.addFolder", () => {
 		promptForAddFolder();
 	});
 	context.subscriptions.push(addFolderCommand);
 
-	const removeFolderCommand = commands.registerCommand("vscode-show-migration.removeFolder", () => {
+	const removeFolderCommand = commands.registerCommand("vscode-open-migration.removeFolder", () => {
 		promptForRemoveFolder();
 	});
 
 	context.subscriptions.push(removeFolderCommand);
 
-	const resetFoldersCommand = commands.registerCommand("vscode-show-migration.resetToDefaults", () => {
+	const resetFoldersCommand = commands.registerCommand("vscode-open-migration.resetToDefaults", () => {
 		setSearchFolders(defaultSearchFolders);
 		window.showInformationMessage("Migration folders reset to default.");
 	});
