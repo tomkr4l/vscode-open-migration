@@ -23,17 +23,17 @@
 			{
 				"command": "vscode-open-migration.openLatest",
 				"title": "Open Latest Migration",
-				"category": "OpenMigration"
+				"category": "Migration"
 			},
 			{
 				"command": "vscode-open-migration.revealFolder",
 				"title": "Reveal Migration Folder",
-				"category": "OpenMigration"
+				"category": "Migration"
 			},
 			{
 				"command": "vscode-open-migration.openMigration",
 				"title": "Open Migration File...",
-				"category": "OpenMigration"
+				"category": "Migration"
 			},
 			{
 				"command": "vscode-open-migration.addFolder",
@@ -47,7 +47,7 @@
 			},
 			{
 				"command": "vscode-open-migration.resetToDefaults",
-				"title": "Reset to default",
+				"title": "Reset migration folders to defaults",
 				"category": "OpenMigration"
 			}
 		],
