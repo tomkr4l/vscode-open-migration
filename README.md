@@ -1,4 +1,4 @@
-![icon](images/icon.png)
+<img src="images/logo.png" width="128" alt="logo"/>
 
 # VSCode Open Migration extension
 

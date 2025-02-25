@@ -1,8 +1,8 @@
 {
 	"name": "vscode-open-migration",
 	"displayName": "Open Migration",
-	"description": "Work with migration files easily. Open the latest migration file, reveal the migration folder, and more.",
-	"version": "1.0.0",
+	"description": "Work with migration files quickly. Open the latest migration file, reveal the migration folder, and more.",
+	"version": "1.0.1",
 	"publisher": "tomkr4l",
 	"repository": {
 		"type": "github",
@@ -19,9 +19,14 @@
 	"categories": [
 		"Other"
 	],
+	"keywords": [
+		"DB",
+		"database",
+		"migrations"
+	],
 	"activationEvents": [],
 	"main": "./out/extension.js",
-	"icon": "images/icon.png",
+	"icon": "images/logo.png",
 	"contributes": {
 		"commands": [
 			{
