@@ -4,6 +4,10 @@
 	"description": "Work with migration files easily. Open the latest migration file, reveal the migration folder, and more.",
 	"version": "1.0.0",
 	"publisher": "tomkr4l",
+	"repository": {
+		"type": "github",
+		"url": "https://github.com/tomkr4l/vscode-open-migration"
+	},
 	"author": {
 		"name": "Tomáš Král",
 		"homepage": "https://github.com/tomkr4l"
