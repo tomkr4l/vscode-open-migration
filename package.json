@@ -2,7 +2,7 @@
 	"name": "vscode-open-migration",
 	"displayName": "Open Migration",
 	"description": "Work with migration files easily. Open the latest migration file, reveal the migration folder, and more.",
-	"version": "0.1.0",
+	"version": "1.0.0",
 	"publisher": "tomkr4l",
 	"author": {
 		"name": "Tomáš Král",
@@ -22,27 +22,33 @@
 		"commands": [
 			{
 				"command": "vscode-open-migration.openLatest",
-				"title": "Open Latest Migration"
+				"title": "Open Latest Migration",
+				"category": "OpenMigration"
 			},
 			{
 				"command": "vscode-open-migration.revealFolder",
-				"title": "Reveal Migration Folder"
+				"title": "Reveal Migration Folder",
+				"category": "OpenMigration"
 			},
 			{
 				"command": "vscode-open-migration.openMigration",
-				"title": "Open Migration File..."
+				"title": "Open Migration File...",
+				"category": "OpenMigration"
 			},
 			{
 				"command": "vscode-open-migration.addFolder",
-				"title": "OpenMigration: Add migration folder for this workspace"
+				"title": "Add migration folder for this workspace",
+				"category": "OpenMigration"
 			},
 			{
 				"command": "vscode-open-migration.removeFolder",
-				"title": "OpenMigration: Remove migration folder for this workspace"
+				"title": "Remove migration folder for this workspace",
+				"category": "OpenMigration"
 			},
 			{
 				"command": "vscode-open-migration.resetToDefaults",
-				"title": "OpenMigration: Reset to default"
+				"title": "Reset to default",
+				"category": "OpenMigration"
 			}
 		],
 		"configuration": {

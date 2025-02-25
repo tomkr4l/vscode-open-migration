@@ -1,71 +1,42 @@
-# vscode-open-migration README
+![icon](images/icon.png)
 
-This is the README for your extension "vscode-open-migration". After writing up a brief description, we recommend including the following sections.
+# VSCode Open Migration extension
+
+This extension helps you to quickly work with your migration files.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- Open latest migration file
+- Open specific migration
+- Reveal migration folder in file explorer
+- Customize own paths to search for migration files in your project
 
-For example if there is an image subfolder under your extension project workspace:
+## Usage
 
-\!\[feature X\]\(images/feature-x.png\)
+### Open latest migration file
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+Press `Ctrl+Shift+P` and type `Open latest migration` to open the latest migration file.
 
-## Requirements
+![open-latest-migration](images/open_latest.gif)
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+### Open specific migration
 
-## Extension Settings
+Press `Ctrl+Shift+P` and type `Open migration file...` to open a specific migration file. Files are sorted from newest to oldest.
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+![open-migration](images/open_migration.gif)
 
-For example:
+### Reveal migration folder in file explorer
 
-This extension contributes the following settings:
+Press `Ctrl+Shift+P` and type `Reveal migration folder` to reveal the migration folder in file explorer. First folder found in the list of set migration folders will be used.
 
-- `myExtension.enable`: Enable/disable this extension.
-- `myExtension.thing`: Set to `blah` to do something.
+![reveal-migration-folder](images/reveal_folder.gif)
 
-## Known Issues
+## Customize migration folders
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+## Add
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-- [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-- Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-- Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-- Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-- [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-- [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+Check the [CHANGELOG.md](CHANGELOG.md) for details.
 
 **Enjoy!**
